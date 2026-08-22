@@ -1,0 +1,53 @@
+@import "tailwindcss";
+@variant dark (&:where(.dark, .dark *));
+
+:root {
+  --primary: #1264E8;
+  --primary-dark: #0848B8;
+  --primary-light: #E8F1FF;
+
+  --accent: #FF8A00;
+  --accent-dark: #E56F00;
+  --accent-light: #FFF3E0;
+
+  --background: #F8FAFC;
+  --surface: #FFFFFF;
+
+  --text-primary: #172033;
+  --text-secondary: #64748B;
+
+  --border: #E2E8F0;
+}
+
+.dark {
+  --background: #0f172a;
+  --surface: #1e293b;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --border: #334155;
+  --primary-light: #d9dce5;
+  /* darker blue for subtle backgrounds in dark mode */
+  --accent-light: #7c2d12;
+  /* darker orange for subtle backgrounds in dark mode */
+}
+
+@theme {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  --color-primary: var(--primary);
+  --color-primary-dark: var(--primary-dark);
+  --color-primary-light: var(--primary-light);
+
+  --color-accent: var(--accent);
+  --color-accent-dark: var(--accent-dark);
+  --color-accent-light: var(--accent-light);
+
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+
+  --color-border: var(--border);
+}
