@@ -20,12 +20,27 @@ export default function QRCodeGenerator({ orgSlug }: { orgSlug: string }) {
   const [isGenerating, setIsGenerating] = useState(false);
   const [paletteIndex, setPaletteIndex] = useState(0);
   const [mounted, setMounted] = useState(false);
+  const [previewScale, setPreviewScale] = useState(0.5);
+  const containerRef = useRef<HTMLDivElement>(null);
   const posterRef = useRef<HTMLDivElement>(null);
   const { organization } = useOrganization();
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const observer = new ResizeObserver((entries) => {
+      for (let entry of entries) {
+        // A4 pixel width is 794px
+        const newScale = entry.contentRect.width / 794;
+        setPreviewScale(newScale);
+      }
+    });
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, [mounted]);
 
   const storeName = organization?.name || "Our Store";
   const storeUrl = typeof window !== 'undefined'
@@ -117,10 +132,12 @@ export default function QRCodeGenerator({ orgSlug }: { orgSlug: string }) {
       </div>
 
       {/* Right side: Preview */}
-      <div className="w-full xl:w-2/3 flex justify-center">
-        {/* We use a scale transform to fit the giant A4 div nicely on screen */}
-        <div className="relative border shadow-2xl rounded-sm overflow-hidden bg-white" style={{ width: '397px', height: '561.5px' }}>
-          <div id="qr-scale-wrapper" style={{ transform: 'scale(0.5)', transformOrigin: 'top left' }}>
+      <div className="w-full xl:w-2/3 flex justify-center px-4 md:px-0">
+        <div
+          ref={containerRef}
+          className="relative w-full max-w-99..25 aspect-[1/1.414] border shadow-2xl rounded-sm overflow-hidden bg-white"
+        >
+          <div id="qr-scale-wrapper" style={{ transform: `scale(${previewScale})`, transformOrigin: 'top left', width: '794px', height: '1123px' }}>
             <QRCodePoster
               ref={posterRef}
               storeName={storeName}
