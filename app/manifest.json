@@ -1,6 +1,7 @@
 {
-  "name": "MyWebSite",
-  "short_name": "MySite",
+  "name": "RateMitra",
+  "short_name": "RateMitra",
+  "description": "Next-Gen Price List Management",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",

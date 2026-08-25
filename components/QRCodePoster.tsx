@@ -2,6 +2,7 @@
 
 import React, { forwardRef } from 'react';
 import { QRCode } from 'react-qrcode-logo';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface QRCodePosterProps {
   storeName: string;
@@ -22,6 +23,8 @@ const QRCodePoster = forwardRef<HTMLDivElement, QRCodePosterProps>(({
   qrStyle = 'dots',
   eyeRadius = 10
 }, ref) => {
+  const { t } = useLanguage();
+
   return (
     <div
       ref={ref}
@@ -41,7 +44,7 @@ const QRCodePoster = forwardRef<HTMLDivElement, QRCodePosterProps>(({
             {storeName || "Our Store"}
           </h1>
           <p className="text-2xl font-medium tracking-wide uppercase" style={{ color: '#4b5563' }}>
-            Official Price List
+            {t('officialPriceList')}
           </p>
         </div>
 
@@ -66,7 +69,7 @@ const QRCodePoster = forwardRef<HTMLDivElement, QRCodePosterProps>(({
         {/* Call to Action */}
         <div className="mt-16">
           <h2 className="text-4xl font-extrabold mb-4" style={{ color: textColor }}>
-            Scan to view prices instantly!
+            {t('scanToView')}
           </h2>
           <p className="text-xl font-medium flex items-center justify-center gap-2" style={{ color: '#6b7280' }}>
             <span className="flex items-center h-full mt-0.5">
@@ -74,7 +77,7 @@ const QRCodePoster = forwardRef<HTMLDivElement, QRCodePosterProps>(({
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
               </svg>
             </span>
-            <span>No app required. Just use your phone's camera.</span>
+            <span>{t('noAppRequired')}</span>
           </p>
         </div>
       </div>

@@ -3,7 +3,21 @@ import { auth, currentUser } from '@clerk/nextjs/server';
 import dbConnect from '@/lib/mongodb';
 import PriceItem from '@/models/PriceItem';
 import ActionLog from '@/models/ActionLog';
-import translate from 'translate';
+import translate from 'google-translate-api-x';
+
+async function transliterate(text: string): Promise<string> {
+  const url = `https://inputtools.google.com/request?text=${encodeURIComponent(text)}&itc=hi-t-i0-und&num=1&cp=0&cs=1&ie=utf-8&oe=utf-8&app=test`;
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    if (data[0] === 'SUCCESS') {
+      return data[1][0][1][0];
+    }
+  } catch (e) {
+    console.error('Transliteration failed', e);
+  }
+  return text;
+}
 
 export async function GET(req: NextRequest) {
   try {
@@ -46,16 +60,13 @@ export async function POST(req: NextRequest) {
     if (isHindi) {
       nameHi = name;
       try {
-        finalName = await translate(name, { from: 'hi', to: 'en' });
+        const res = await translate(name, { from: 'hi', to: 'en' });
+        finalName = res.text;
       } catch (e) {
         console.error('Translation failed', e);
       }
     } else {
-      try {
-        nameHi = await translate(name, { from: 'en', to: 'hi' });
-      } catch (e) {
-        console.error('Translation failed', e);
-      }
+      nameHi = await transliterate(name);
     }
 
     const newItem = await PriceItem.create({
@@ -108,18 +119,15 @@ export async function PATCH(req: NextRequest) {
       if (isHindi) {
         updateData.nameHi = name;
         try {
-          updateData.name = await translate(name, { from: 'hi', to: 'en' });
+          const res = await translate(name, { from: 'hi', to: 'en' });
+          updateData.name = res.text;
         } catch (e) {
           console.error('Translation failed', e);
           updateData.name = name; // fallback
         }
       } else {
         updateData.name = name;
-        try {
-          updateData.nameHi = await translate(name, { from: 'en', to: 'hi' });
-        } catch (e) {
-          console.error('Translation failed', e);
-        }
+        updateData.nameHi = await transliterate(name);
       }
     }
     if (price !== undefined) updateData.price = price;

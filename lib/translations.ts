@@ -38,6 +38,11 @@ export const translations = {
     save: "Save",
     saveItem: "Save Item",
 
+    // QR Poster
+    officialPriceList: "Official Price List",
+    scanToView: "Scan to view prices instantly!",
+    noAppRequired: "No app required. Just use your phone's camera.",
+
     // Theme Settings
     orgTheme: "Organization Theme",
     primaryColor: "Primary Color",
@@ -105,6 +110,11 @@ export const translations = {
     cancel: "रद्द करें",
     save: "सहेजें",
     saveItem: "आइटम सहेजें",
+
+    // QR Poster
+    officialPriceList: "आधिकारिक मूल्य सूची",
+    scanToView: "तुरंत कीमतें देखने के लिए स्कैन करें!",
+    noAppRequired: "किसी ऐप की आवश्यकता नहीं है। बस अपने फोन के कैमरे का उपयोग करें।",
 
     // Theme Settings
     orgTheme: "संगठन थीम",
