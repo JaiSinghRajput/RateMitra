@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
     if (isHindi) {
       nameHi = name;
       try {
-        const res = await translate(name, { from: 'hi', to: 'en' });
+        const res: any = await translate(name, { from: 'hi', to: 'en' });
         finalName = res.text;
       } catch (e) {
         console.error('Translation failed', e);
@@ -119,7 +119,7 @@ export async function PATCH(req: NextRequest) {
       if (isHindi) {
         updateData.nameHi = name;
         try {
-          const res = await translate(name, { from: 'hi', to: 'en' });
+          const res: any = await translate(name, { from: 'hi', to: 'en' });
           updateData.name = res.text;
         } catch (e) {
           console.error('Translation failed', e);

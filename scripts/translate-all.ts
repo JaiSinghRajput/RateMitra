@@ -59,7 +59,7 @@ async function run() {
         // Name is in Hindi, but nameHi is empty. Let's make nameHi = name, and translate name to English.
         console.log(`Translating Hindi name to English for item: ${item.name}`);
         try {
-          const res = await translate(item.name, { from: 'hi', to: 'en' });
+          const res: any = await translate(item.name, { from: 'hi', to: 'en' });
           item.nameHi = item.name;
           item.name = res.text;
           needsUpdate = true;
