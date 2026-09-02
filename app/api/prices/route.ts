@@ -4,6 +4,13 @@ import dbConnect from '@/lib/mongodb';
 import PriceItem from '@/models/PriceItem';
 import ActionLog from '@/models/ActionLog';
 import translate from 'google-translate-api-x';
+import { v2 as cloudinary } from 'cloudinary';
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 async function transliterate(text: string): Promise<string> {
   const url = `https://inputtools.google.com/request?text=${encodeURIComponent(text)}&itc=hi-t-i0-und&num=1&cp=0&cs=1&ie=utf-8&oe=utf-8&app=test`;
@@ -45,7 +52,7 @@ export async function POST(req: NextRequest) {
     // if (!has({ role: 'org:admin' })) { return NextResponse.json({ error: 'Forbidden' }, { status: 403 }); }
 
     const body = await req.json();
-    const { name, price, qty, unit, isVisible } = body;
+    const { name, price, qty, unit, isVisible, image } = body;
 
     if (!name || price == null) {
       return NextResponse.json({ error: 'Name and price are required' }, { status: 400 });
@@ -69,6 +76,18 @@ export async function POST(req: NextRequest) {
       nameHi = await transliterate(name);
     }
 
+    let imageUrl;
+    if (image && image.startsWith('data:image')) {
+      try {
+        const uploadRes = await cloudinary.uploader.upload(image, {
+          folder: 'price-list-items',
+        });
+        imageUrl = uploadRes.secure_url;
+      } catch (err) {
+        console.error('Cloudinary upload failed:', err);
+      }
+    }
+
     const newItem = await PriceItem.create({
       name: finalName,
       nameHi,
@@ -76,6 +95,7 @@ export async function POST(req: NextRequest) {
       qty: qty !== undefined ? qty : 1,
       unit: unit || 'pcs',
       isVisible: isVisible !== undefined ? isVisible : true,
+      imageUrl,
       organizationId: orgId,
     });
 
@@ -105,7 +125,7 @@ export async function PATCH(req: NextRequest) {
     }
 
     const body = await req.json();
-    const { id, isVisible, name, price, qty, unit } = body;
+    const { id, isVisible, name, price, qty, unit, image } = body;
 
     if (!id) {
       return NextResponse.json({ error: 'Item ID is required' }, { status: 400 });
@@ -133,6 +153,19 @@ export async function PATCH(req: NextRequest) {
     if (price !== undefined) updateData.price = price;
     if (qty !== undefined) updateData.qty = qty;
     if (unit !== undefined) updateData.unit = unit;
+
+    if (image && image.startsWith('data:image')) {
+      try {
+        const uploadRes = await cloudinary.uploader.upload(image, {
+          folder: 'price-list-items',
+        });
+        updateData.imageUrl = uploadRes.secure_url;
+      } catch (err) {
+        console.error('Cloudinary upload failed:', err);
+      }
+    } else if (image === '') {
+      updateData.imageUrl = '';
+    }
 
     const updatedItem = await PriceItem.findOneAndUpdate(
       { _id: id, organizationId: orgId },

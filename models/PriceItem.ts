@@ -7,6 +7,7 @@ export interface IPriceItem extends Document {
   qty?: number;
   unit?: string;
   isVisible: boolean;
+  imageUrl?: string;
   organizationId: string;
   createdAt: Date;
   updatedAt: Date;
@@ -20,6 +21,7 @@ const PriceItemSchema: Schema = new Schema(
     qty: { type: Number, default: 1 },
     unit: { type: String, default: 'pcs' },
     isVisible: { type: Boolean, default: true },
+    imageUrl: { type: String },
     organizationId: { type: String, required: true, index: true },
   },
   {

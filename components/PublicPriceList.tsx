@@ -12,6 +12,7 @@ interface PriceItem {
   qty?: number;
   unit?: string;
   nameHi?: string;
+  imageUrl?: string;
 }
 
 interface Theme {
@@ -139,14 +140,21 @@ export default function PublicPriceList({
                 } as any}
               >
                 <div>
-                  <h3 
-                    className="text-2xl font-bold mb-2 transition-colors" 
-                    style={{ color: theme.fontColor || '#1f2937' }} 
-                    onMouseEnter={(e) => (e.currentTarget.style.color = theme.primaryColor)} 
-                    onMouseLeave={(e) => (e.currentTarget.style.color = theme.fontColor || '#1f2937')}
-                  >
-                    {language === 'hi' && item.nameHi ? item.nameHi : item.name}
-                  </h3>
+                  <div className="flex items-center gap-4 mb-2">
+                    {item.imageUrl && (
+                      <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 border border-white/20 shadow-sm">
+                        <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
+                      </div>
+                    )}
+                    <h3 
+                      className="text-2xl font-bold transition-colors" 
+                      style={{ color: theme.fontColor || '#1f2937' }} 
+                      onMouseEnter={(e) => (e.currentTarget.style.color = theme.primaryColor)} 
+                      onMouseLeave={(e) => (e.currentTarget.style.color = theme.fontColor || '#1f2937')}
+                    >
+                      {language === 'hi' && item.nameHi ? item.nameHi : item.name}
+                    </h3>
+                  </div>
                   <div className="h-1 w-12 rounded-full mb-6 transition-all group-hover:w-16" style={{ backgroundColor: theme.primaryColor }}></div>
                 </div>
                 <div className="flex items-baseline gap-1">

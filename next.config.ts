@@ -8,9 +8,11 @@ const withPWA = withPWAInit({
   workboxOptions: {
     skipWaiting: true,
   },
+
 });
 
 const nextConfig: NextConfig = {
+  allowedDevOrigins: ['192.168.0.103'],
   turbopack: {},
   /* config options here */
 };
