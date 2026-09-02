@@ -216,6 +216,22 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json({ error: 'Item not found' }, { status: 404 });
     }
 
+    // Delete image from Cloudinary if it exists
+    if (deletedItem.imageUrl && deletedItem.imageUrl.includes('cloudinary.com')) {
+      try {
+        const urlParts = deletedItem.imageUrl.split('/');
+        const filenameWithExt = urlParts.pop();
+        const folder = urlParts.pop();
+        const filename = filenameWithExt?.split('.')[0];
+        if (folder && filename) {
+          const publicId = `${folder}/${filename}`;
+          await cloudinary.uploader.destroy(publicId);
+        }
+      } catch (err) {
+        console.error('Failed to delete image from Cloudinary:', err);
+      }
+    }
+
     const user = await currentUser();
     const userName = user ? `${user.firstName || ''} ${user.lastName || ''}`.trim() || user.primaryEmailAddress?.emailAddress || 'Unknown Member' : 'Unknown Member';
     
