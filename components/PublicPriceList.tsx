@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
-import { Search, Languages } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Search, Languages, X } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface PriceItem {
@@ -37,6 +37,7 @@ export default function PublicPriceList({
   const { language, setLanguage } = useLanguage();
   const [searchQuery, setSearchQuery] = useState("");
   const [mounted, setMounted] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -133,33 +134,43 @@ export default function PublicPriceList({
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: index * 0.05 }}
                 whileHover={{ y: -5, boxShadow: `0 20px 25px -5px ${theme.primaryColor}30, 0 8px 10px -6px ${theme.primaryColor}20` }}
-                className="p-6 md:p-8 backdrop-blur-xl rounded-3xl border border-white/50 shadow-xl flex flex-col justify-between group transition-all"
+                className="p-6 md:p-8 backdrop-blur-xl rounded-3xl border border-white/50 shadow-xl flex gap-6 items-center group transition-all"
                 style={{ 
                   '--tw-shadow-color': `${theme.primaryColor}30`,
                   backgroundColor: theme.cardBackgroundColor || 'rgba(255, 255, 255, 0.8)'
                 } as any}
               >
-                <div>
-                  <div className="flex items-center gap-4 mb-2">
-                    {item.imageUrl && (
-                      <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 border border-white/20 shadow-sm">
-                        <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
-                      </div>
-                    )}
+                {item.imageUrl && (
+                  <div 
+                    className="w-24 h-24 sm:w-32 sm:h-32 rounded-2xl overflow-hidden shrink-0 border border-white/20 shadow-md cursor-pointer relative"
+                    onClick={() => setSelectedImage(item.imageUrl!)}
+                    title="Click to view full image"
+                  >
+                    <img 
+                      src={item.imageUrl} 
+                      alt={item.name} 
+                      className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
+                    />
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
+                  </div>
+                )}
+                
+                <div className="flex flex-col flex-1 justify-center py-1">
+                  <div>
                     <h3 
-                      className="text-2xl font-bold transition-colors" 
+                      className="text-2xl font-bold transition-colors mb-2" 
                       style={{ color: theme.fontColor || '#1f2937' }} 
                       onMouseEnter={(e) => (e.currentTarget.style.color = theme.primaryColor)} 
                       onMouseLeave={(e) => (e.currentTarget.style.color = theme.fontColor || '#1f2937')}
                     >
                       {language === 'hi' && item.nameHi ? item.nameHi : item.name}
                     </h3>
+                    <div className="h-1 w-12 rounded-full mb-4 transition-all group-hover:w-16" style={{ backgroundColor: theme.primaryColor }}></div>
                   </div>
-                  <div className="h-1 w-12 rounded-full mb-6 transition-all group-hover:w-16" style={{ backgroundColor: theme.primaryColor }}></div>
-                </div>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-3xl md:text-4xl font-extrabold" style={{ color: theme.fontColor || '#111827' }}>₹{item.price.toFixed(2)}</span>
-                  <span className="text-sm md:text-base font-medium opacity-75" style={{ color: theme.fontColor || '#6b7280' }}>/ {item.qty || 1} {item.unit || 'pcs'}</span>
+                  <div className="flex items-baseline gap-1 mt-2">
+                    <span className="text-3xl md:text-4xl font-extrabold" style={{ color: theme.fontColor || '#111827' }}>₹{item.price.toFixed(2)}</span>
+                    <span className="text-sm md:text-base font-medium opacity-75" style={{ color: theme.fontColor || '#6b7280' }}>/ {item.qty || 1} {item.unit || 'pcs'}</span>
+                  </div>
                 </div>
               </motion.div>
             ))
@@ -179,6 +190,39 @@ export default function PublicPriceList({
           Powered by RateMitra
         </motion.div>
       </div>
+
+      {/* Image Modal */}
+      <AnimatePresence>
+        {selectedImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSelectedImage(null)}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative max-w-4xl max-h-[90vh] rounded-2xl overflow-hidden shadow-2xl bg-white/5"
+            >
+              <button
+                onClick={() => setSelectedImage(null)}
+                className="absolute top-4 right-4 z-10 p-2 bg-black/50 hover:bg-black/70 text-white rounded-full backdrop-blur-md transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+              <img 
+                src={selectedImage} 
+                alt="Enlarged view" 
+                className="w-full h-full max-h-[90vh] object-contain"
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

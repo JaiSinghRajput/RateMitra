@@ -39,7 +39,8 @@ export default async function PublicSharePage({ params }: { params: Promise<{ or
       price: doc.price,
       qty: doc.qty,
       unit: doc.unit,
-      isVisible: doc.isVisible
+      isVisible: doc.isVisible,
+      imageUrl: doc.imageUrl
     }));
 
     const theme = settings ? {
